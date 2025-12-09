@@ -41,7 +41,7 @@ namespace CatchTheApple
             if (e.Key == Key.D) KeyD = false;
         }
 
-        private void KeyIsDown(Object sender, KeyEventArgs e)
+        private void KeyIsDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.W) KeyW = true;
             if (e.Key == Key.A) KeyA = true;
@@ -75,8 +75,15 @@ namespace CatchTheApple
             SpeedY *= Friction;
             SpeedX *= Friction;
 
-            Canvas.SetLeft(worm, Canvas.GetLeft(worm) + SpeedX);
-            Canvas.SetTop(worm, Canvas.GetTop(worm) - SpeedY);
+            double newX = Canvas.GetLeft(worm) + SpeedX;
+            double newY = Canvas.GetTop(worm) - SpeedY;
+
+            // Clamp worm inside canvas (0 to canvas width/height minus worm size)
+            newX = Math.Max(0, Math.Min(newX, gameArea.ActualWidth - worm.Width));
+            newY = Math.Max(0, Math.Min(newY, gameArea.ActualHeight - worm.Height));
+
+            Canvas.SetLeft(worm, newX);
+            Canvas.SetTop(worm, newY);
 
             appleCatching();
 
@@ -84,6 +91,7 @@ namespace CatchTheApple
             healthTxt.Text = $"health: {health}";
 
             gameOver();
+
         }
 
 
@@ -198,7 +206,7 @@ namespace CatchTheApple
             {
                 if (item is Image img)
                 {
-                    string type = img.Tag as string;
+                    string? type = img.Tag as string;
 
                     Rect hitBox = new Rect(
                         Canvas.GetLeft(img),
@@ -229,6 +237,21 @@ namespace CatchTheApple
 
         private void gameOver()
         {
+
+            if (score == 30)
+            {
+                Canvas.SetLeft(worm, 450);
+                Canvas.SetTop(worm, 320);
+
+                health = 3;
+                score = 0;
+
+                SpeedX = 0;
+                SpeedY = 0;
+                KeyW = KeyA = KeyS = KeyD = false;
+
+                MessageBox.Show("You Won!", "Game Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
             if (health == 0)
             {
                 Canvas.SetLeft(worm, 450);
