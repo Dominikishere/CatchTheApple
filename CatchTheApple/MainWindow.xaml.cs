@@ -11,9 +11,13 @@ namespace CatchTheApple
     {
         DispatcherTimer timer = new DispatcherTimer();
         DispatcherTimer appleRemover = new DispatcherTimer();
+
         private Random random = new Random();
         private Random appleRandom = new Random();
+
         private int score = 0;
+        private int health = 3;
+
         private bool KeyW, KeyA, KeyS, KeyD;
         private float SpeedY, SpeedX, Friction = 0.88f, Speed = 2;
         public MainWindow()
@@ -77,12 +81,17 @@ namespace CatchTheApple
             appleCatching();
 
             scoreTxt.Text = $"Score: {score}";
+            healthTxt.Text = $"health: {health}";
+
+            gameOver();
         }
 
 
         private void spawnApple()
         {
             ImageBrush appleBrush = new ImageBrush();
+            ImageBrush rottenAppleBrush = new ImageBrush();
+
             var apple = new Image
             {
                 Width = 50,
@@ -90,74 +99,150 @@ namespace CatchTheApple
                 Source = new BitmapImage(new Uri("pack://application:,,,/Images/apple.png"))
             };
 
-            var wormX = Canvas.GetLeft(worm);
-            var wormY = Canvas.GetTop(worm);
-
-            double appleX = 0; //  AI segítség, hogy ne spawnoljon alma a worm hitboxába, valamint köré se annyira
-            double appleY = 0;
-            double minDistance = 120;
-
-            double distance = 0;
-
-            while (distance < minDistance)
+            var rottenApple = new Image
             {
-                appleX = random.Next(0, 750);
-                appleY = random.Next(0, 350);
-
-                double dx = appleX - wormX;
-                double dy = appleY - wormY;
-                distance = Math.Sqrt(dx * dx + dy * dy);
-            }
-
-            Canvas.SetLeft(apple, appleX);
-            Canvas.SetTop(apple, appleY);
-
-            gameArea.Children.Add(apple);
-
-            DispatcherTimer appleTimer = new DispatcherTimer();
-            appleTimer.Interval = TimeSpan.FromSeconds(3);
-            appleTimer.Tick += (s, e) =>
-            {
-                appleTimer.Stop();      
-                gameArea.Children.Remove(apple);
+                Width= 50,
+                Height= 50,
+                Source = new BitmapImage(new Uri("pack://application:,,,/Images/rottenApple.png"))
             };
 
-            appleTimer.Start();           
+            apple.Tag = "good";
+            rottenApple.Tag = "bad";
+
+            if (appleRandom.Next(0,4) == 0)
+            {
+                var wormX = Canvas.GetLeft(worm);
+                var wormY = Canvas.GetTop(worm);
+
+                double appleX = 0; //  AI segítség, hogy ne spawnoljon alma a worm hitboxába, valamint köré se annyira
+                double appleY = 0;
+                double minDistance = 120;
+
+                double distance = 0;
+
+                while (distance < minDistance)
+                {
+                    appleX = random.Next(0, 750);
+                    appleY = random.Next(0, 350);
+
+                    double dx = appleX - wormX;
+                    double dy = appleY - wormY;
+                    distance = Math.Sqrt(dx * dx + dy * dy);
+                }
+
+                Canvas.SetLeft(rottenApple, appleX);
+                Canvas.SetTop(rottenApple, appleY);
+
+                gameArea.Children.Add(rottenApple);
+
+                DispatcherTimer appleTimer = new DispatcherTimer();
+                appleTimer.Interval = TimeSpan.FromSeconds(3);
+                appleTimer.Tick += (s, e) =>
+                {
+                    appleTimer.Stop();
+                    gameArea.Children.Remove(rottenApple);
+                };
+
+                appleTimer.Start();
+
+            } else
+            {
+                var wormX = Canvas.GetLeft(worm);
+                var wormY = Canvas.GetTop(worm);
+
+                double appleX = 0;
+                double appleY = 0;
+                double minDistance = 120;
+
+                double distance = 0;
+
+                while (distance < minDistance)
+                {
+                    appleX = random.Next(0, 750);
+                    appleY = random.Next(0, 350);
+
+                    double dx = appleX - wormX;
+                    double dy = appleY - wormY;
+                    distance = Math.Sqrt(dx * dx + dy * dy);
+                }
+
+                Canvas.SetLeft(apple, appleX);
+                Canvas.SetTop(apple, appleY);
+
+                gameArea.Children.Add(apple);
+
+                DispatcherTimer appleTimer = new DispatcherTimer();
+                appleTimer.Interval = TimeSpan.FromSeconds(3);
+                appleTimer.Tick += (s, e) =>
+                {
+                    appleTimer.Stop();
+                    gameArea.Children.Remove(apple);
+                };
+
+                appleTimer.Start();
+            }
         }
 
         private void appleCatching() // AI besegített a collisionnel
         {
-            List<Image> applesToRemove = new List<Image>();
+            List<Image> toRemove = new List<Image>();
 
-            foreach (var item in gameArea.Children)
-            {
-                if (item is Image apple)
-                {
-                    Rect wormHitBox = new Rect(
+            Rect wormHitBox = new Rect(
                         Canvas.GetLeft(worm),
                         Canvas.GetTop(worm),
                         worm.Width,
                         worm.Height);
 
-                    Rect appleHitBox = new Rect(
-                        Canvas.GetLeft(apple),
-                        Canvas.GetTop(apple),
-                        apple.Width,
-                        apple.Height);
 
-                    if (wormHitBox.IntersectsWith(appleHitBox))
+            foreach (var item in gameArea.Children)
+            {
+                if (item is Image img)
+                {
+                    string type = img.Tag as string;
+
+                    Rect hitBox = new Rect(
+                        Canvas.GetLeft(img),
+                        Canvas.GetTop(img),
+                        img.Width,
+                        img.Height);
+
+                    if (wormHitBox.IntersectsWith(hitBox))
                     {
-                        applesToRemove.Add(apple);
-                        score++;
+                        if (type == "good")
+                        {
+                            score++;
+                        }
+                        else if (type == "bad")
+                        {
+                            health--;
+                        }
+
+                        toRemove.Add(img);
                     }
                 }
             }
-
-            foreach (var apple in applesToRemove)
+            foreach (var img in toRemove)
             {
-                gameArea.Children.Remove(apple);
+                gameArea.Children.Remove(img);
             }
+        }
 
+        private void gameOver()
+        {
+            if (health == 0)
+            {
+                Canvas.SetLeft(worm, 450);
+                Canvas.SetTop(worm, 320);
+                
+                health = 3;
+                score = 0;
+
+                SpeedX = 0;
+                SpeedY = 0;
+                KeyW = KeyA = KeyS = KeyD = false;
+
+                MessageBox.Show("Game Over!", "Game Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
 }

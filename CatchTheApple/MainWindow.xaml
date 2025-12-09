@@ -9,8 +9,14 @@
     <Canvas x:Name="gameArea" Focusable="True" Background="Green" KeyUp="KeyIsUp" KeyDown="KeyIsDown">
         <Rectangle x:Name="worm" Width="100" Height="100" Fill="White"
                    Canvas.Left="450" Canvas.Top="320"/>
-        <TextBlock x:Name="scoreTxt" Text="Score: 0" FontSize="50" Foreground="White" FontFamily="Times New Roman"
-                   FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        <StackPanel>
+            <TextBlock x:Name="healthTxt" Text="Health: 3" FontSize="50" Foreground="Orange" FontFamily="Times New Roman"
+            FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+            <TextBlock x:Name="scoreTxt" Text="Score: 0" FontSize="35" Foreground="White" FontFamily="Times New Roman"
+            FontWeight="Bold"/>
+            
+        </StackPanel>
+
     </Canvas>
 
 </Window>
