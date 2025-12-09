@@ -240,8 +240,8 @@ namespace CatchTheApple
 
             if (score == 30)
             {
-                Canvas.SetLeft(worm, 450);
-                Canvas.SetTop(worm, 320);
+                Canvas.SetLeft(worm, 350);
+                Canvas.SetTop(worm, 180);
 
                 health = 3;
                 score = 0;
@@ -254,8 +254,8 @@ namespace CatchTheApple
             }
             if (health == 0)
             {
-                Canvas.SetLeft(worm, 450);
-                Canvas.SetTop(worm, 320);
+                Canvas.SetLeft(worm, 350);
+                Canvas.SetTop(worm, 180);
                 
                 health = 3;
                 score = 0;

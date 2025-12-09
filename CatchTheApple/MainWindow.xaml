@@ -10,7 +10,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Canvas x:Name="gameArea" Focusable="True" Background="Green" KeyUp="KeyIsUp" KeyDown="KeyIsDown">
         <Rectangle x:Name="worm" Width="100" Height="100" Fill="White"
-                   Canvas.Left="450" Canvas.Top="320"/>
+                   Canvas.Left="350" Canvas.Top="180"/>
         <StackPanel>
             <TextBlock x:Name="healthTxt" Text="Health: 3" FontSize="50" Foreground="Orange" FontFamily="Times New Roman"
             FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
