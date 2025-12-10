@@ -78,7 +78,6 @@ namespace CatchTheApple
             double newX = Canvas.GetLeft(worm) + SpeedX;
             double newY = Canvas.GetTop(worm) - SpeedY;
 
-            // Clamp worm inside canvas (0 to canvas width/height minus worm size)
             newX = Math.Max(0, Math.Min(newX, gameArea.ActualWidth - worm.Width));
             newY = Math.Max(0, Math.Min(newY, gameArea.ActualHeight - worm.Height));
 
